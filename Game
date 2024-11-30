@@ -1,0 +1,79 @@
+import random
+
+def generate_room():
+    """Generates a random room description."""
+    room_types = ["cave", "forest clearing", "abandoned hut", "tower chamber"]
+    items = ["a rusty sword", "a healing potion", "a map fragment", "a golden key"]
+    
+    room_type = random.choice(room_types)
+    item = random.choice(items) if random.random() < 0.7 else None #70% chance of having an item
+
+    description = f"You enter a {room_type}.  "
+    if item:
+        description += f"You see {item} lying on the ground."
+    else:
+        description += "The room is empty except for dust and cobwebs."
+    return description, item
+
+
+
+def get_player_choice(options):
+  """Gets a valid choice from the player."""
+  while True:
+    print("\nYour choices:")
+    for i, option in enumerate(options):
+      print(f"{i+1}. {option}")
+    try:
+      choice = int(input("Enter your choice: ")) -1
+      if 0 <= choice < len(options):
+        return choice
+      else:
+        print("Invalid choice. Try again.")
+    except ValueError:
+      print("Invalid input.  Please enter a number.")
+
+
+
+def play_game():
+    """Plays the adventure game."""
+    inventory = []
+    current_room, item = generate_room()
+    print(current_room)
+    
+    game_over = False
+    while not game_over:
+      if item:
+        options = ["Take the " + item, "Leave it there"]
+      else:
+        options = ["Go north","Go south", "Go east", "Go west"]
+      
+      player_choice = get_player_choice(options)
+
+      if item and player_choice == 0:
+          inventory.append(item)
+          print(f"You picked up the {item} and added it to your inventory.")
+          item = None  # Remove the item from the room
+
+      elif len(options) == 4: #navigation only. 
+          # This is a simplification.  A more sophisticated game
+          # might use a map or graph to represent room connections
+          direction = options[player_choice]
+          print(f"You went {direction}.")
+          current_room, item = generate_room()  # Move to new room
+          print(current_room)
+
+
+      else:
+          print("Nothing happened.")  
+
+      if random.random() < 0.1:
+          game_over = True # random event ending the game
+          print("\nA sudden event brings the game to an unexpected end...")
+
+
+
+
+if __name__ == "__main__":
+  print("Welcome to the Text Adventure!")
+  play_game()
+  print("Game Over!")
